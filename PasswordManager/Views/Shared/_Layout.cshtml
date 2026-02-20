@@ -7,12 +7,11 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/tailwind.css" asp-append-version="true" />
 </head>
-<body class="flex flex-col min-h-screen">
-    <header class="bg-zinc-900 text-white shadow-md">
+<body class="flex flex-col min-h-screen overflow-hidden bg-zinc-400">
+    <header class="bg-zinc-900 text-white border-zinc-600 border-b-2">
         <nav class="container mx-auto px-4">
             <div class="flex items-center justify-between h-16">
                 <a class="text-xl font-bold hover:text-zinc-300 transition-colors" 
-                  asp-area="" 
                   asp-controller="Home" 
                   asp-action="Index">
                     Password Manager
@@ -31,7 +30,6 @@
                     <ul class="flex space-x-6">
                         <li>
                             <a class="text-white hover:text-gray-500 transition-colors" 
-                              asp-area="" 
                               asp-controller="Home" 
                               asp-action="Index">
                                 Home
@@ -39,7 +37,6 @@
                         </li>
                         <li>
                             <a class="text-white hover:text-gray-500 transition-colors" 
-                              asp-area="" 
                               asp-controller="Home" 
                               asp-action="Privacy">
                                 Privacy
@@ -53,7 +50,6 @@
                 <ul class="space-y-2">
                     <li>
                         <a class="block py-2 transition-colors text-white hover:text-gray-500" 
-                          asp-area="" 
                           asp-controller="Home" 
                           asp-action="Index">
                             Home
@@ -61,7 +57,6 @@
                     </li>
                     <li>
                         <a class="block py-2 transition-colors text-white hover:text-gray-500" 
-                          asp-area="" 
                           asp-controller="Home" 
                           asp-action="Privacy">
                             Privacy
@@ -72,19 +67,26 @@
         </nav>
     </header>
     
-    <div class="grow bg-zinc-800 text-white">
-        <main class="container mx-auto px-4 py-8">
+    <div class="flex flex-1 overflow-hidden">
+
+        <aside class="w-40 relative flex min-h-full md:w-60 border-r-2 border-zinc-600 bg-zinc-900 overflow-auto">
+            <div class="flex w-full shrink-0 flex-col items-center text-white">
+              @await RenderSectionAsync("Sidebar", required:false)
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-auto bg-zinc-800 p-8">
             @RenderBody()
-        </main>
-    </div>
-    
+        </ma>
+
+    </div> 
+
     <footer class="border-t-2 border-zinc-600 text-gray-500 py-4 bg-zinc-900">
         <div class="container mx-auto px-4 text-center">
             &copy; 2026 - PasswordManager - 
-            <a class="hover:text-gray-300 transition-colors" 
-               asp-area="" 
-               asp-controller="Home" 
-               asp-action="Privacy">
+            <a class="hover:text-gray-300 transition-colors"  
+                asp-controller="Home" 
+                asp-action="Privacy">
                 Privacy
             </a>
         </div>

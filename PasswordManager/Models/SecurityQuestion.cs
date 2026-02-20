@@ -17,15 +17,7 @@ namespace PasswordManager.Models
     public string Answer { get; set; } = "";
 
 
-    public List<EntrySecurityQuestion> EntrySecurityQuestions { get; } = new();
+    public List<Entry> Entries { get; } = new();
   }
 
-  public class EntrySecurityQuestion
-  {
-    public int EntryId { get; set; }
-    public Entry Entry { get; set; } = null!;
-
-    public int SecurityQuestionId { get; set; }
-    public SecurityQuestion SecurityQuestion { get; set; } = null!;
-  }
 }

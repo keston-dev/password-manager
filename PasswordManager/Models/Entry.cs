@@ -1,5 +1,4 @@
-
-
+using System.ComponentModel.DataAnnotations;
 
 namespace PasswordManager.Models
 {
@@ -10,6 +9,7 @@ namespace PasswordManager.Models
     public int AccountId { get; set; }
     public Account Account { get; set; } = null!;
 
+    [Required(ErrorMessage = "Please enter a url.")]
     public string Hostname { get; set; } = "";
 
 
@@ -19,6 +19,6 @@ namespace PasswordManager.Models
 
     public string Username { get; set; } = "";
 
-    public List<EntrySecurityQuestion> EntrySecurityQuestions { get; } = new();
+    public List<SecurityQuestion> SecurityQuestions { get; } = new();
   }
 }
