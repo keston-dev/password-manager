@@ -8,7 +8,7 @@ This project will be updated periodically to reflect changes done in "sprints". 
 
 (I will update this if I add more stuff)
 
-- C#
+- .NET 8
 - ASP.NET Core (MVC)
 - TailwindCSS
 - MSSQL
@@ -16,7 +16,7 @@ This project will be updated periodically to reflect changes done in "sprints". 
 
 ## TODO / some planned features
 
-- [ ] "User"/"Account" model
+- [x] Account model
 - [ ] Data retention and encryption
 - [ ] Security questions?
 - [ ] Password strength testing

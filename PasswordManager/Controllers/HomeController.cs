@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ObjectPool;
 using PasswordManager.Models;
 
@@ -19,10 +20,23 @@ public class HomeController : Controller
     _logger = logger;
   }
 
-  public IActionResult Index(int? id = null)
+
+  [Route("/")]
+  public IActionResult Index()
   {
-    ViewBag.ActiveUser = id;
-    List<Account> accounts = context.Accounts.OrderBy(a => a.Username).ToList();
+    var (accounts, _) = this.GetAccountData(null);
+    return View(accounts);
+  }
+
+  [Route("accounts/{id}/{slug}")]
+  public IActionResult Account(int id, string slug)
+  {
+    var (accounts, active) = GetAccountData(id);
+
+    if (active == null) return RedirectToAction("Index");
+
+    ViewBag.ActiveUser = active;
+
     return View(accounts);
   }
 
@@ -50,6 +64,15 @@ public class HomeController : Controller
   public IActionResult Privacy()
   {
     return View();
+  }
+
+
+
+  private (List<Account>, Account? active) GetAccountData(int? id)
+  {
+    List<Account> accounts = context.Accounts.OrderBy((a) => a.AccountId).ToList();
+    Account? active = accounts.FirstOrDefault((a) => a.AccountId == id);
+    return (accounts, active);
   }
 
 }

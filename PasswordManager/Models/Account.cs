@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace PasswordManager.Models
 {
@@ -17,5 +18,8 @@ namespace PasswordManager.Models
     public List<Entry> Entries { get; } = new();
 
     public List<SecurityQuestion> SecurityQuestions { get; } = new();
+
+
+    public string Slug => Regex.Replace(Username.ToLower(), @"[^a-z0-9]+", "-").Trim('-');
   }
 }
