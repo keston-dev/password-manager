@@ -102,6 +102,15 @@ namespace PasswordManager.Migrations
                     { 2, "anotherpassword!", "SecondUser" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "Entries",
+                columns: new[] { "EntryId", "AccountId", "Email", "Hostname", "Password", "Username" },
+                values: new object[,]
+                {
+                    { 1, 1, "", "google.com", "example", "testUser" },
+                    { 2, 1, "", "github.com", "example123!", "testUser" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Entries_AccountId",
                 table: "Entries",

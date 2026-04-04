@@ -1,0 +1,37 @@
+@model Account
+
+@section Sidebar {
+    <div class="flex flex-col w-full h-full relative">
+
+        <div class="px-4 pt-5 pb-3">
+            <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Entries</p>
+        </div>
+
+        <div class="flex flex-col flex-1 overflow-y-auto">
+            @foreach (Entry entry in @Model.Entries) {
+                <a class="group flex items-center gap-3 px-4 py-4 border-b border-zinc-700/50 hover:bg-zinc-700/60 transition-all duration-200 cursor-pointer"
+                   asp-route-entryId="@entry.EntryId"
+                   asp-controller="Entries"
+                   asp-action="View">
+
+                    <div class="flex flex-col min-w-0">
+                        <p class="text-sm font-semibold text-white truncate">@entry.Hostname</p>
+                        <span class="text-xs text-zinc-500">
+                            <span class="mt-1 inline-block bg-zinc-700 text-zinc-300 rounded-full px-2 py-0.5 text-xs font-medium">
+                                @entry.Username
+                            </span>
+                        </span>
+                    </div>
+
+                </a>
+            }
+        </div>
+
+        <div class="p-4 border-t border-zinc-700/50">
+            <button class="w-full flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-600 active:scale-95 transition-all duration-150 text-white text-sm font-semibold rounded-lg py-3 px-4">
+                Create New Entry
+            </button>
+        </div>
+
+    </div>
+}

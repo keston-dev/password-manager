@@ -11,7 +11,7 @@ using PasswordManager.Models;
 namespace PasswordManager.Migrations
 {
     [DbContext(typeof(AccountContext))]
-    [Migration("20260220031556_Initial")]
+    [Migration("20260404171204_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -106,6 +106,26 @@ namespace PasswordManager.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Entries");
+
+                    b.HasData(
+                        new
+                        {
+                            EntryId = 1,
+                            AccountId = 1,
+                            Email = "",
+                            Hostname = "google.com",
+                            Password = "example",
+                            Username = "testUser"
+                        },
+                        new
+                        {
+                            EntryId = 2,
+                            AccountId = 1,
+                            Email = "",
+                            Hostname = "github.com",
+                            Password = "example123!",
+                            Username = "testUser"
+                        });
                 });
 
             modelBuilder.Entity("PasswordManager.Models.SecurityQuestion", b =>

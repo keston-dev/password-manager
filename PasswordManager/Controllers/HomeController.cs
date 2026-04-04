@@ -28,8 +28,8 @@ public class HomeController : Controller
     return View(accounts);
   }
 
-  [Route("accounts/{id}/{slug}")]
-  public IActionResult Account(int id, string slug)
+  [Route("/accounts/{id}")]
+  public IActionResult Account(int id)
   {
     var (accounts, active) = GetAccountData(id);
 
@@ -44,7 +44,6 @@ public class HomeController : Controller
   [HttpPost]
   public IActionResult Login(int id, string password)
   {
-    _logger.LogInformation($"Password: {password}");
     Account? account = context.Accounts.Find(id);
 
     // Obviously, at some point, the master password would need to be hashed.
@@ -58,13 +57,9 @@ public class HomeController : Controller
     }
 
 
-    return RedirectToAction("Index", "Entries", new { username = account.Username });
+    return RedirectToAction("Index", "Entries", new { accountId = account.AccountId });
   }
-
-  public IActionResult Privacy()
-  {
-    return View();
-  }
+  
 
 
 

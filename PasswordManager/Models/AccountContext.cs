@@ -60,6 +60,25 @@ namespace PasswordManager.Models
         },
         new Account { AccountId = 2, Username = "SecondUser", MasterPassword = "anotherpassword!" }
       );
+
+      modelBuilder.Entity<Entry>().HasData(
+        new Entry
+        {
+          EntryId = 1,
+          AccountId = 1,
+          Hostname = "google.com",
+          Password = "example",
+          Username = "testUser",
+        }, 
+        new Entry()
+        {
+          EntryId = 2,
+          AccountId = 1,
+          Hostname = "github.com",
+          Password = "example123!",
+          Username = "testUser",
+        }
+      );
     }
   }
 }
