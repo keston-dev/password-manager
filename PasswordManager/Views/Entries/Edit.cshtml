@@ -1,0 +1,324 @@
+@model PasswordManager.ViewModels.EntryEditModel
+
+@section Sidebar {
+    <div class="flex flex-col w-full h-full relative">
+
+        <div class="px-4 pt-5 pb-3">
+            <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Entries</p>
+        </div>
+
+        <div class="flex flex-col flex-1 overflow-y-auto">
+            @foreach (Entry entry in Model.Entries) {
+                <a class="group flex items-center gap-3 px-4 py-4 border-b border-zinc-700/50 hover:bg-zinc-700/60 transition-all duration-200 cursor-pointer"
+                   asp-route-entryId="@entry.EntryId"
+                   asp-controller="Entries"
+                   asp-action="View">
+                    <div class="flex flex-col min-w-0">
+                        <p class="text-sm font-semibold text-white truncate">@entry.Hostname</p>
+                        <span class="mt-1 inline-block bg-zinc-700 text-zinc-300 rounded-full px-2 py-0.5 text-xs font-medium">
+                            @entry.Username
+                        </span>
+                    </div>
+                </a>
+            }
+        </div>
+
+        <div class="p-4 border-t border-zinc-700/50">
+            <a asp-controller="Entries"
+               asp-action="Add"
+               asp-route-accountId="@Model.Entry.AccountId"
+               class="w-full flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-600 active:scale-95 transition-all duration-150 text-white text-sm font-semibold rounded-lg py-3 px-4">
+                Create New Entry
+            </a>
+        </div>
+    </div>
+}
+
+<div class="w-full bg-zinc-900 h-full text-white p-8 flex flex-col rounded-xl gap-6 overflow-y-auto">
+
+    <div class="flex items-center justify-between pb-6 border-">
+        <div class="flex items-center gap-3">
+            <a asp-controller="Entries"
+               asp-action="Index"
+               asp-route-accountId="@Model.Entry.AccountId"
+               class="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-800 border border-zinc-700 hover:border-zinc-600 hover:text-white transition-colors text-zinc-400 p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold text-white">@(Model.Action == "Add" ? "New Entry" : "Edit Entry")</h1>
+                <p class="text-xs text-zinc-500 mt-0.5">@(Model.Action == "Add" ? "Add a new entry" : "Update your entry")</p>
+            </div>
+        </div>
+        
+        @if (Model.Action == "Edit") {
+            <form asp-controller="Entries" asp-action="Delete" method="post" onsubmit="return confirm('Delete this entry?')">
+                <input type="hidden" name="entryId" value="@Model.Entry.EntryId" />
+                <button type="submit"
+                        class="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-1.5 rounded-lg transition-all duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Delete
+                </button>
+            </form>
+        }
+    </div>
+
+    
+    <form asp-controller="Entries"
+          asp-action="@Model.Action"
+          asp-route-accountId="@Model.Entry.AccountId"
+          method="post"
+          id="entry-form"
+          class="flex flex-col gap-5 max-w-md w-full">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Entry.EntryId" />
+        <input type="hidden" asp-for="Entry.AccountId" />
+
+        <div class="flex flex-col gap-2">
+            <label asp-for="Entry.Hostname" class="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+                Website / Hostname <span class="text-purple-400">*</span>
+            </label>
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16A8 8 0 0010 2zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.559-.499-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.559.499.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <input asp-for="Entry.Hostname"
+                           placeholder="https://example.com"
+                           class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+                </div>
+            </div>
+            <span asp-validation-for="Entry.Hostname" class="text-xs text-red-400"></span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label asp-for="Entry.Email" class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Email <span class="text-purple-400">*</span></label>
+            <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/>
+                    </svg>
+                </span>
+                <input asp-for="Entry.Email"
+                       type="email"
+                       placeholder="you@example.com"
+                       class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+            </div>
+            <span asp-validation-for="Entry.Email" class="text-xs text-red-400"></span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label asp-for="Entry.Username" class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Username</label>
+            <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                    </svg>
+                </span>
+                <input asp-for="Entry.Username"
+                       placeholder="username"
+                       class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label asp-for="Entry.Password" class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Password <span class="text-purple-400">*</span></label>
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+                        </svg>
+                    </span>
+                    <input asp-for="Entry.Password"
+                           type="password"
+                           id="password-input"
+                           placeholder="••••••••••••"
+                           class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200 font-mono tracking-widest" />
+                </div>
+                <button type="button"
+                        onclick="togglePassword()"
+                        class="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-purple-400 hover:border-purple-500 transition-all duration-150"
+                        title="Toggle visibility">
+                    <svg id="eye-show" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <svg id="eye-hide" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                </button>
+                <button type="button"
+                        onclick="generatePassword()"
+                        class="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-purple-400 hover:border-purple-500 transition-all duration-150"
+                        title="Generate strong password">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <span asp-validation-for="Entry.Password" class="text-xs text-red-400"></span>
+
+            <div class="flex flex-col gap-1.5 mt-1">
+                <div class="flex gap-1">
+                    <div id="bar-1" class="h-1 flex-1 rounded-full bg-zinc-700 transition-colors duration-300"></div>
+                    <div id="bar-2" class="h-1 flex-1 rounded-full bg-zinc-700 transition-colors duration-300"></div>
+                    <div id="bar-3" class="h-1 flex-1 rounded-full bg-zinc-700 transition-colors duration-300"></div>
+                    <div id="bar-4" class="h-1 flex-1 rounded-full bg-zinc-700 transition-colors duration-300"></div>
+                </div>
+                <p id="strength-label" class="text-xs text-zinc-500"></p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 pt-1">
+            <div class="h-px flex-1 bg-zinc-700/60"></div>
+            <span class="text-xs text-zinc-600 uppercase tracking-widest">Security Questions</span>
+            <div class="h-px flex-1 bg-zinc-700/60"></div>
+        </div>
+
+        <div id="security-questions-container" class="flex flex-col gap-3">
+            @for (int i = 0; i < Model.Entry.SecurityQuestions.Count; i++) {
+                <div class="security-question-row flex gap-2 items-start">
+                    <div class="flex-1 space-y-2">
+                        <input name="Entry.SecurityQuestions[@i].Question"
+                               value="@Model.Entry.SecurityQuestions[i].Question"
+                               placeholder="Security question"
+                               class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+                        <input name="Entry.SecurityQuestions[@i].Answer"
+                               value="@Model.Entry.SecurityQuestions[i].Answer"
+                               placeholder="Answer"
+                               class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+                    </div>
+                    <button type="button"
+                            onclick="removeQuestion(this)"
+                            class="mt-3 w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500/50 hover:bg-red-500/10 transition-all duration-150 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <button type="button"
+                onclick="addQuestion()"
+                class="flex items-center gap-2 text-sm text-zinc-400 hover:text-purple-400 transition-colors duration-150 group w-fit">
+            <span class="flex items-center justify-center w-5 h-5 rounded-full border border-zinc-700 group-hover:border-purple-500/60 group-hover:bg-purple-500/10 transition-all duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            Add security question
+        </button>
+
+        <div class="flex items-center gap-3 pt-4">
+            <button type="submit"
+                    class="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 active:scale-95 transition-all duration-150 text-white text-sm font-semibold rounded-xl p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                @(Model.Action == "Add" ? "Create Entry" : "Save Changes")
+            </button>
+            <a asp-controller="Entries"
+               asp-action="Index"
+               asp-route-accountId="@Model.Entry.AccountId"
+               class="text-sm text-zinc-500 hover:text-zinc-300 transition-colors duration-150 px-4 py-3">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+<script>
+    function togglePassword() {
+        const input = document.getElementById('password-input')
+        const eyeShow = document.getElementById('eye-show')
+        const eyeHide = document.getElementById('eye-hide')
+        const isHidden = input.type === 'password'
+        input.type = isHidden ? 'text' : 'password'
+        eyeShow.classList.toggle('hidden', isHidden)
+        eyeHide.classList.toggle('hidden', !isHidden)
+    }
+
+    function generatePassword() {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@@#$%^&*()-_=+[]{}|;:,.<>?'
+        const length = 20
+        let password = ''
+        for (let i = 0; i < length; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length))
+        }
+        const input = document.getElementById('password-input')
+        input.value = password
+        input.type = 'text'
+        document.getElementById('eye-show').classList.add('hidden')
+        document.getElementById('eye-hide').classList.remove('hidden')
+        input.dispatchEvent(new Event('input'))
+    }
+
+    document.getElementById('password-input').addEventListener('input', function () {
+        const val = this.value
+        const bars = ['bar-1', 'bar-2', 'bar-3', 'bar-4']
+
+        if (!val) {
+            bars.forEach(id => document.getElementById(id).className = 'h-1 flex-1 rounded-full bg-zinc-700 transition-colors duration-300')
+            document.getElementById('strength-label').textContent = ''
+            return
+        }
+
+        const result = window.getPasswordStrength(val)
+
+
+        let score = result.score
+
+        const colorMap = ['bg-red-500', 'bg-yellow-500', 'bg-green-500', 'bg-sky-500']
+        const labelMap = [['Weak', 'text-red-400'], ['Fair', 'text-yellow-400'], ['Good', 'text-green-400'], ['Strong', 'text-sky-400']]
+
+        bars.forEach((id, idx) => {
+            document.getElementById(id).className =
+                `h-1 flex-1 rounded-full transition-colors duration-300 ${idx < score ? colorMap[score - 1] : 'bg-zinc-700'}`
+        })
+
+        const [label, color] = labelMap[score - 1] ?? ['', 'text-zinc-500']
+        const el = document.getElementById('strength-label')
+        el.textContent = label
+        el.className = `text-xs font-medium ${color}`
+    })
+
+    let questionIndex = @Model.Entry.SecurityQuestions.Count
+
+    function addQuestion() {
+        const container = document.getElementById('security-questions-container')
+        const i = questionIndex++
+        const row = document.createElement('div')
+        row.className = 'security-question-row flex gap-2 items-start'
+        row.innerHTML = `
+            <div class="flex-1 space-y-2">
+                <input name="Entry.SecurityQuestions[${i}].Question" placeholder="Security question"
+                       class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+                <input name="Entry.SecurityQuestions[${i}].Answer" placeholder="Answer"
+                       class="w-full bg-zinc-800 border border-zinc-700 hover:border-zinc-600 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all duration-200" />
+            </div>
+            <button type="button" onclick="removeQuestion(this)"
+                    class="mt-3 w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500/50 hover:bg-red-500/10 transition-all duration-150 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>`
+        container.appendChild(row)
+        row.querySelector('input').focus()
+    }
+
+    function removeQuestion(btn) {
+        btn.closest('.security-question-row').remove()
+    }
+</script>
+}
