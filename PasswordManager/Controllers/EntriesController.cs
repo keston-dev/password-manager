@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ObjectPool;
@@ -7,48 +8,39 @@ using PasswordManager.ViewModels;
 
 namespace PasswordManager.Controllers;
 
+[Authorize]
 [Route("entries")]
-public class EntriesController : Controller
+public class EntriesController : BaseController
 {
-  
-  
-  private AccountContext context { get; set; }
-  
-  public EntriesController(AccountContext ctx) => context = ctx;
-  
-  [Route("{accountId}")]
-  public IActionResult Index(int accountId)
-  {
-    Account? account = context.Accounts
-      .Include(a => a.Entries)
-      .FirstOrDefault(a => a.AccountId == accountId);
 
-    if (account == null) return RedirectToAction("Index", "Home");
 
-    return View(account);
-  }
 
-  [Route("view/{entryId}")]
-  public IActionResult View(int entryId)
-  {
-    Entry? active = context.Entries
-      .Include(e => e.Account)
-      .ThenInclude(a => a.Entries)
-      .FirstOrDefault(e => e.EntryId == entryId);
+    public EntriesController(AccountContext ctx) : base(ctx) { }
 
-    if (active == null) return RedirectToAction("Index", "Home");
+    [Route("{accountId}")]
+    public IActionResult Index(int accountId)
+    {
+        var account = GetOrCreateAccount();
+        return View(account);
+    }
 
-    return View(new EntryViewModel { Account = active.Account, ActiveEntry = active });
-  }
-  
+    [Route("view/{entryId}")]
+    public IActionResult View(int entryId)
+    {
+        var account = GetOrCreateAccount();
+
+        Entry? active = account.Entries
+          .FirstOrDefault(e => e.EntryId == entryId);
+
+        if (active == null) return RedirectToAction("Index", "Home");
+
+        return View(new EntryViewModel { Account = account, ActiveEntry = active });
+    }
+
     [HttpGet("add/{accountId}")]
     public IActionResult Add(int accountId)
     {
-        Account? account = context.Accounts
-            .Include(a => a.Entries)
-            .FirstOrDefault(a => a.AccountId == accountId);
-
-        if (account == null) return RedirectToAction("Index", "Home");
+        var account = GetOrCreateAccount();
 
         return View("Edit", new EntryEditModel
         {
@@ -59,32 +51,27 @@ public class EntriesController : Controller
     }
 
     [HttpPost("add/{accountId}")]
-    public IActionResult Add(EntryEditModel model, int accountId) 
+    public IActionResult Add(EntryEditModel model, int accountId)
     {
+        var account = GetOrCreateAccount();
         if (!ModelState.IsValid)
         {
-            var errors = ModelState
-                .Where(x => x.Value?.Errors.Count > 0)
-                .Select(x => $"{x.Key}: {x.Value!.Errors[0].ErrorMessage}");
-            // Set a breakpoint here or log `errors`
-            foreach (var e in errors) Console.WriteLine(e);
-            var account = context.Accounts
-                .Include(a => a.Entries)
-                .First(a => a.AccountId == accountId);
             model.Entry.Account = account;
             model.Action = "Add";
             model.Entries = account.Entries.OrderBy(e => e.EntryId).ToList();
             return View("Edit", model);
         }
-        context.Entries.Add(model.Entry);
-        context.SaveChanges();
+
+        model.Entry.AccountId = account.AccountId;
+        Context.Entries.Add(model.Entry);
+        Context.SaveChanges();
         return RedirectToAction("View", new { entryId = model.Entry.EntryId });
     }
 
     [HttpGet("edit/{entryId}")]
     public IActionResult Edit(int entryId)
     {
-        Entry? entry = context.Entries
+        Entry? entry = Context.Entries
             .Include(e => e.Account)
             .ThenInclude(a => a.Entries)
             .Include(e => e.SecurityQuestions)
@@ -105,32 +92,30 @@ public class EntriesController : Controller
     {
         if (!ModelState.IsValid)
         {
-            var account = context.Accounts
-                .Include(a => a.Entries)
-                .First(a => a.AccountId == model.Entry.AccountId);
+            var account = GetOrCreateAccount();
             model.Entry.Account = account;
             model.Action = "Edit";
             model.Entries = account.Entries.OrderBy(e => e.EntryId).ToList();
             return View(model);
         }
-        context.Entries.Update(model.Entry);
-        context.SaveChanges();
+        Context.Entries.Update(model.Entry);
+        Context.SaveChanges();
         return RedirectToAction("View", new { entryId = model.Entry.EntryId });
-    }   
-
-
-  [HttpPost("delete")]
-  public IActionResult Delete(int entryId)
-  {
-    Entry? entry = context.Entries.Find(entryId);
-    if (entry != null)
-    {
-      int accountId = entry.AccountId;
-      context.Entries.Remove(entry);
-      context.SaveChanges();
-      return RedirectToAction("Index", new { accountId });
     }
-    return RedirectToAction("Index", "Home");
-  }
+
+
+    [HttpPost("delete")]
+    public IActionResult Delete(int entryId)
+    {
+        Entry? entry = Context.Entries.Find(entryId);
+        if (entry != null)
+        {
+            int accountId = entry.AccountId;
+            Context.Entries.Remove(entry);
+            Context.SaveChanges();
+            return RedirectToAction("Index", new { accountId });
+        }
+        return RedirectToAction("Index", "Home");
+    }
 
 }

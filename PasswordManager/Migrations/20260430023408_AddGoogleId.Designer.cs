@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PasswordManager.Models;
 
@@ -10,9 +11,11 @@ using PasswordManager.Models;
 namespace PasswordManager.Migrations
 {
     [DbContext(typeof(AccountContext))]
-    partial class AccountContextModelSnapshot : ModelSnapshot
+    [Migration("20260430023408_AddGoogleId")]
+    partial class AddGoogleId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,6 +50,10 @@ namespace PasswordManager.Migrations
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MasterPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -54,6 +61,20 @@ namespace PasswordManager.Migrations
                     b.HasKey("AccountId");
 
                     b.ToTable("Accounts");
+
+                    b.HasData(
+                        new
+                        {
+                            AccountId = 1,
+                            MasterPassword = "testPassword123",
+                            Username = "testUser"
+                        },
+                        new
+                        {
+                            AccountId = 2,
+                            MasterPassword = "anotherpassword!",
+                            Username = "SecondUser"
+                        });
                 });
 
             modelBuilder.Entity("PasswordManager.Models.Entry", b =>
@@ -88,6 +109,26 @@ namespace PasswordManager.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Entries");
+
+                    b.HasData(
+                        new
+                        {
+                            EntryId = 1,
+                            AccountId = 1,
+                            Email = "",
+                            Hostname = "google.com",
+                            Password = "example",
+                            Username = "testUser"
+                        },
+                        new
+                        {
+                            EntryId = 2,
+                            AccountId = 1,
+                            Email = "",
+                            Hostname = "github.com",
+                            Password = "example123!",
+                            Username = "testUser"
+                        });
                 });
 
             modelBuilder.Entity("PasswordManager.Models.SecurityQuestion", b =>

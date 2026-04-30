@@ -13,15 +13,18 @@ This project will be updated periodically to reflect changes done in "sprints". 
 - TailwindCSS
 - MSSQL
 - EF Core
+- Google OAuth
+- ZXCVBN (for password strength testing)
 
 ## TODO / some planned features
 
 - [x] Account model
 - [ ] Data retention and encryption
 - [ ] Security questions?
-- [ ] Password strength testing
+- [x] Password strength testing
 - [ ] Password re-use monitor
 - [ ] Password auto-generation
+- [x] Oauth account connection.
 
 ## Building/testing
 
@@ -38,16 +41,15 @@ git clone https://github.com/keston-dev/password-manager.git
    This project uses the [Microsoft SQL Server DB](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (as well as its EF core package), but you're welcome to change this.
    You'll also need to create your own version of the `appsettings.json` file, which I have provided an `appsettings.example.json` file to build from. It already contains a local DB that you can run without any configuration necessary, or you can bring your own.
 
-3. Install dependencies (optional)
-
-   This comes from Tailwind specifically. You'll need [NodeJS](https://nodejs.org/en) installed.
+3. Install dependencies
+   This is required for tailwind and zxcvbn (which is the [`zxcvbn-ts` package on NPM](https://www.npmjs.com/package/zxcvbn-ts)). You'll need [NodeJS](https://nodejs.org/en) installed.
    Run:
 
    ```bash
    npm i
    ```
 
-   This is only necessary if you wish to update the `tailwind.css` file based on [Tailwind's CLI install guide](https://tailwindcss.com/docs/installation/tailwind-cli) with a `--watch` option. If you wish to modify the existing css or just use whats already available, you don't need to do this, and can instead just edit `wwwroot/css/tailwind.css`
+   If you wish to modify the existing css or just use whats already available, you can instead just edit `wwwroot/css/tailwind.css`.
 
 4. Build the project
 

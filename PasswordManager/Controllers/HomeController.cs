@@ -6,68 +6,19 @@ using PasswordManager.Models;
 
 namespace PasswordManager.Controllers;
 
-public class HomeController : Controller
+public class HomeController : BaseController
 {
 
-  private AccountContext context { get; set; }
+    public HomeController(AccountContext ctx, AccountContext context) : base(ctx) { }
 
-  private readonly ILogger<HomeController> _logger;
-
-
-  public HomeController(ILogger<HomeController> logger, AccountContext ctx)
-  {
-    context = ctx;
-    _logger = logger;
-  }
-
-
-  [Route("/")]
-  public IActionResult Index()
-  {
-    var (accounts, _) = this.GetAccountData(null);
-    return View(accounts);
-  }
-
-  [Route("/accounts/{id}")]
-  public IActionResult Account(int id)
-  {
-    var (accounts, active) = GetAccountData(id);
-
-    if (active == null) return RedirectToAction("Index");
-
-    ViewBag.ActiveUser = active;
-
-    return View(accounts);
-  }
-
-
-  [HttpPost]
-  public IActionResult Login(int id, string password)
-  {
-    Account? account = context.Accounts.Find(id);
-
-    // Obviously, at some point, the master password would need to be hashed.
-    // Since im just working through basic pre-seeded data at the moment, I won't.
-
-
-    if (account == null || account.MasterPassword != password)
+    [Route("/")]
+    public IActionResult Index()
     {
-      TempData.Add("Errors", "Invalid password.");
-      return RedirectToAction("Index", new { id });
+        if (User.Identity?.IsAuthenticated != true) return View();
+
+        var account = GetOrCreateAccount();
+        return RedirectToAction("Index", "Entries", new { accountId = account.AccountId });
+
     }
-
-
-    return RedirectToAction("Index", "Entries", new { accountId = account.AccountId });
-  }
-  
-
-
-
-  private (List<Account>, Account? active) GetAccountData(int? id)
-  {
-    List<Account> accounts = context.Accounts.OrderBy((a) => a.AccountId).ToList();
-    Account? active = accounts.FirstOrDefault((a) => a.AccountId == id);
-    return (accounts, active);
-  }
 
 }
