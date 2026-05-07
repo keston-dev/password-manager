@@ -16,14 +16,16 @@ This project will be updated periodically to reflect changes done in "sprints". 
 - Google OAuth
 - ZXCVBN (for password strength testing)
 
+Passwords are encrypted using the AES-256 specification.
+
 ## TODO / some planned features
 
 - [x] Account model
-- [ ] Data retention and encryption
+- [x] Data retention and encryption
 - [ ] Security questions?
 - [x] Password strength testing
 - [ ] Password re-use monitor
-- [ ] Password auto-generation
+- [x] Password auto-generation
 - [x] Oauth account connection.
 
 ## Building/testing
@@ -51,7 +53,19 @@ git clone https://github.com/keston-dev/password-manager.git
 
    If you wish to modify the existing css or just use whats already available, you can instead just edit `wwwroot/css/tailwind.css`.
 
-4. Build the project
+4. Configure `appsettings`
+   As mentioned, I've given a template for the `appsettings.json`, which originally had default values. However there are more keys now you must get:
+   1. For Google's Oauth, you must obtain a client ID and client secret, located at [Google's Cloud Console](https://console.cloud.google.com/welcome)
+   2. Create a new project, then navigate on the sidebar to `APIs & Services` -> `Credentials` -> create an `OAuth 2.0 Client Ids`, select type `Web Application`, and copy the `Client Id` and `Client Secret`.
+   3. For the encryption key, you can generate a pseudo-random one with the following snippet:
+
+   ```cs
+     var key = new byte[32];
+     /**System.Security.Cryptography.*/ RandomNumberGenerator.Fill(key);
+     Console.WriteLine(Convert.ToBase64String(key));
+   ```
+
+5. Build the project
 
    If youre using Visual Studio, you should be able to build it as any other .NET application.
 

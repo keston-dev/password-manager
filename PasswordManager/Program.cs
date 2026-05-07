@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using PasswordManager.Models;
@@ -8,7 +7,6 @@ using PasswordManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 bool isDev = builder.Environment.IsDevelopment();
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<EncryptionService>();
@@ -16,7 +14,6 @@ builder.Services.AddDbContext<AccountContext>(options => options.UseSqlServer(bu
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
 }).AddGoogle(googleOptions =>
 {
     googleOptions.ClientId = builder.Configuration["Google:ClientId"];
