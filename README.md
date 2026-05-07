@@ -24,7 +24,7 @@ Passwords are encrypted using the AES-256 specification.
 - [x] Data retention and encryption
 - [ ] Security questions?
 - [x] Password strength testing
-- [ ] Password re-use monitor
+- [x] Password re-use monitor
 - [x] Password auto-generation
 - [x] Oauth account connection.
 
