@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.ObjectPool;
 using PasswordManager.Models;
+using PasswordManager.Services;
 using PasswordManager.ViewModels;
 
 namespace PasswordManager.Controllers;
@@ -12,10 +13,12 @@ namespace PasswordManager.Controllers;
 [Route("entries")]
 public class EntriesController : BaseController
 {
-
-
-
-    public EntriesController(AccountContext ctx) : base(ctx) { }
+    private readonly EncryptionService _encryption;
+    
+    public EntriesController(AccountContext ctx, EncryptionService encryption): base(ctx)
+    {
+        _encryption = encryption;
+    }
 
     [Route("{accountId}")]
     public IActionResult Index(int accountId)
@@ -33,8 +36,18 @@ public class EntriesController : BaseController
           .FirstOrDefault(e => e.EntryId == entryId);
 
         if (active == null) return RedirectToAction("Index", "Home");
+        
+        var decryptedPassword = _encryption.Decrypt(active.Password);
+        
+        var reuseCount = account.Entries
+            .Where(e => e.EntryId != active.EntryId && !string.IsNullOrEmpty(e.Password))
+            .Count(e => _encryption.Decrypt(e.Password).Equals(decryptedPassword));
+        
+        
+        active.Password = decryptedPassword;
+        
 
-        return View(new EntryViewModel { Account = account, ActiveEntry = active });
+        return View(new EntryViewModel { Account = account, ActiveEntry = active, PasswordReuseCount = reuseCount });
     }
 
     [HttpGet("add/{accountId}")]
@@ -63,6 +76,7 @@ public class EntriesController : BaseController
         }
 
         model.Entry.AccountId = account.AccountId;
+        model.Entry.Password = _encryption.Encrypt(model.Entry.Password);
         Context.Entries.Add(model.Entry);
         Context.SaveChanges();
         return RedirectToAction("View", new { entryId = model.Entry.EntryId });
@@ -98,6 +112,7 @@ public class EntriesController : BaseController
             model.Entries = account.Entries.OrderBy(e => e.EntryId).ToList();
             return View(model);
         }
+        model.Entry.Password = _encryption.Encrypt(model.Entry.Password);
         Context.Entries.Update(model.Entry);
         Context.SaveChanges();
         return RedirectToAction("View", new { entryId = model.Entry.EntryId });

@@ -46,16 +46,9 @@
                             var name = User.FindFirst(ClaimTypes.Name)?.Value;
 
                             <li class="flex items-center gap-2 min-w-0">
-                                @if (pfp != null)
-                                {
-                                    <img src="@pfp" alt="@name's profile picture" class="w-8 h-8 rounded-full ring-2 ring-zinc-700 shrink-0" />
-                                }
-                                else
-                                {
-                                    <div class="w-8 h-8 rounded-full ring-2 ring-zinc-700 bg-zinc-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                                        @name?[0]
-                                    </div>
-                                }
+                                <div class="w-8 h-8 rounded-full ring-2 ring-zinc-700 bg-zinc-800 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                    @name?[0]
+                                </div>
                                 <span class="text-sm text-white font-semibold truncate max-w-[120px]">@name</span>
                             </li>
                             <li class="shrink-0">
@@ -74,22 +67,14 @@
             
             @if (isAuthed == true)
             {
-                var pfp = User.FindFirst("urn:google:picture")?.Value;
                 var name = User.FindFirst(ClaimTypes.Name)?.Value;
                 
                 <div class="hidden md:hidden pb-4" id="mobile-menu">
                     <ul class="space-y-2">
                             <li class="flex items-center gap-2 min-w-0">
-                                @if (pfp != null)
-                                {
-                                    <img src="@pfp" alt="@name's profile picture" class="w-8 h-8 rounded-full ring-2 ring-zinc-700 shrink-0"/>
-                                }
-                                else
-                                {
-                                    <div class="w-8 h-8 rounded-full ring-2 ring-zinc-700 bg-zinc-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                                        @name?[0]
-                                    </div>
-                                }
+                                <div class="w-8 h-8 rounded-full ring-2 ring-zinc-700 bg-zinc-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                    @name?[0]
+                                </div>
                                 <span class="text-sm text-white font-semibold truncate max-w-[120px]">@name</span>
                             </li>
                             <li class="shrink-0">
